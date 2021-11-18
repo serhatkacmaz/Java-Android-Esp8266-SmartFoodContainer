@@ -1,5 +1,7 @@
 
 #include <ESP8266WiFi.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #include <FirebaseArduino.h>
 #include <Servo.h>
 
@@ -9,15 +11,23 @@
 #define WIFI_SSID "FiberHGW_ZTQR32_2.4GHz"
 #define WIFI_PASSWORD "HR9uueztCE"
 
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org");
+
 // define pin on nodemcu
 #define trigP D1
 #define echoP D2
 #define buzzer D3
 
+// variables
 long duration;
 int distance;
 int servo_angle = 0;
+int currentHour, currentMinute, currentSecond;
 Servo servo;
+String state = "false";
+int distance_bowl = 8;
 
 void setup() {
   pinMode(trigP, OUTPUT);
@@ -39,29 +49,22 @@ void setup() {
   Serial.print("connected: ");
   Serial.println(WiFi.localIP());
 
+  // Initialize a NTPClient to get time
+  // https://randomnerdtutorials.com/esp8266-nodemcu-date-time-ntp-client-server-arduino/
+  timeClient.begin();
+  timeClient.setTimeOffset(10800); // GMT +3
+  // https://randomnerdtutorials.com/esp8266-nodemcu-date-time-ntp-client-server-arduino/
+
   // connect to firebase
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
 }
 
-String state = "false";
-int distance_bowl = 8;
+
 void loop() {
+  nowTime();
+  Serial.println((String)currentHour + ":" + (String)currentMinute + ":" + (String)currentSecond);
 
-  Serial.print(distance_bowl);
-  digitalWrite(trigP, LOW);   // Makes trigPin low
-  delayMicroseconds(2);       // 2 micro second delay
-
-  digitalWrite(trigP, HIGH);  // tigPin high
-  delayMicroseconds(10);      // trigPin high for 10 micro seconds
-  digitalWrite(trigP, LOW);   // trigPin low
-
-  duration = pulseIn(echoP, HIGH);   //Read echo pin, time in microseconds
-  distance = duration * 0.034 / 2;   //Calculating actual/real distance
-
-  Serial.print("Distance = ");        //Output distance on arduino serial monitor
-  Serial.println(distance);
-
-
+  hc04();
 
 
   // 1 tolerans
@@ -78,8 +81,37 @@ void loop() {
       digitalWrite(buzzer, LOW);
     }
   }
-  else{
+  else {
     Firebase.setString("bowl_state", "Full");
   }
 
+}
+
+
+void nowTime() {
+  timeClient.update();
+
+  String formattedTime = timeClient.getFormattedTime();
+  //Serial.print("Formatted Time: ");
+  //Serial.println(formattedTime);
+
+  currentHour = timeClient.getHours();
+  currentMinute = timeClient.getMinutes();
+  currentSecond = timeClient.getSeconds();
+}
+
+void hc04() {
+  Serial.print(distance_bowl);
+  digitalWrite(trigP, LOW);   // Makes trigPin low
+  delayMicroseconds(2);       // 2 micro second delay
+
+  digitalWrite(trigP, HIGH);  // tigPin high
+  delayMicroseconds(10);      // trigPin high for 10 micro seconds
+  digitalWrite(trigP, LOW);   // trigPin low
+
+  duration = pulseIn(echoP, HIGH);   //Read echo pin, time in microseconds
+  distance = duration * 0.034 / 2;   //Calculating actual/real distance
+
+  Serial.print("Distance = ");        //Output distance on arduino serial monitor
+  Serial.println(distance);
 }
