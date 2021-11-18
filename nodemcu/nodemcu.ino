@@ -59,11 +59,11 @@ void setup() {
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
 }
 
-
+String now_time = "";
 void loop() {
   nowTime();
-  Serial.println((String)currentHour + ":" + (String)currentMinute + ":" + (String)currentSecond);
-
+  now_time = (String)currentHour + ":" + (String)currentMinute;
+  Serial.println(now_time);
   hc04();
 
 
@@ -91,13 +91,8 @@ void loop() {
 void nowTime() {
   timeClient.update();
 
-  String formattedTime = timeClient.getFormattedTime();
-  //Serial.print("Formatted Time: ");
-  //Serial.println(formattedTime);
-
   currentHour = timeClient.getHours();
   currentMinute = timeClient.getMinutes();
-  currentSecond = timeClient.getSeconds();
 }
 
 void hc04() {
