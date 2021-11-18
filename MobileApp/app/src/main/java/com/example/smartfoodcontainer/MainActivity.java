@@ -4,9 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -19,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,14 +32,18 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseReference databaseReference;
     private HashMap<String, Object> updateHashMapData;
+    private HashMap<String, Object> registerAlarm;
     private int openClosedCount = 0;    // her 4 kapanmada bir
     private int openingClosingBoundary = 4;
     private String bowl_state;
+
+    int alarmId = 0;
 
     // init
     private void init() {
         databaseReference = FirebaseDatabase.getInstance().getReference(); // root
         updateHashMapData = new HashMap<String, Object>();
+        registerAlarm = new HashMap<String, Object>();
     }
 
     @Override
@@ -44,6 +54,47 @@ public class MainActivity extends AppCompatActivity {
         getData();
         init();
     }
+
+
+    public void setAlarm(View view) {
+        // https://www.youtube.com/watch?v=XG8OpQ7X-nY
+        final Calendar calendar = Calendar.getInstance();
+
+        TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                // System.out.println(simpleDateFormat.format(calendar.getTime().toString()));
+
+                registerAlarm.put(String.valueOf(alarmId), simpleDateFormat.format(calendar.getTime()));
+
+                // ıd alma adete gore
+                databaseReference = FirebaseDatabase.getInstance().getReference().child("Alarm");
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            alarmId = (int) snapshot.getChildrenCount();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+                //ekleme
+                databaseReference.child(String.valueOf(alarmId + 1)).setValue(simpleDateFormat.format(calendar.getTime()));
+            }
+        };
+
+        new TimePickerDialog(MainActivity.this, timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
+        // https://www.youtube.com/watch?v=XG8OpQ7X-nY
+    }
+
 
     public void giveFood(View view) {
         // System.out.println(openClosedCount);

@@ -6,45 +6,75 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
+    android:padding="10dp"
     tools:context=".MainActivity">
 
-<!--
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <!--
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="@color/inputBorderColor"
+            app:endIconMode="clear_text"
+            app:helperTextTextColor="@color/red_helper">
+
+            <EditText
+                android:id="@+id/editTextAdminLoginUserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Deneme"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:textAlignment="center"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+        -->
+
+
+    <TextView
+        android:id="@+id/editTextMainActivity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:padding="5dp"
-        app:boxCornerRadiusBottomEnd="20dp"
-        app:boxCornerRadiusTopStart="20dp"
-        app:boxStrokeColor="@color/inputBorderColor"
-        app:endIconMode="clear_text"
-        app:helperTextTextColor="@color/red_helper">
+        android:layout_margin="5dp"
+        android:background="@drawable/text_view_border"
+        android:textAlignment="center"
+        android:ems="10"
+        android:hint="Alarm Kur"
+        android:inputType="date"
+        android:minHeight="48dp"
+        android:padding="15dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/textViewGrayColor"
+        android:textSize="16dp"
+        tools:ignore="SpeakableTextPresentCheck" />
 
-        <EditText
-            android:id="@+id/editTextAdminLoginUserName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Deneme"
-            android:inputType="textEmailAddress"
-            android:minHeight="48dp"
-            android:textAlignment="center"
-            tools:ignore="SpeakableTextPresentCheck" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-    -->
-
+    <Button
+        android:id="@+id/buttonMainActivitySetAlarm"
+        android:layout_width="750px"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="@color/purple_200"
+        android:onClick="setAlarm"
+        android:text="Alarm Kur"
+        android:textAlignment="center" />
 
 
     <Button
-        android:id="@+id/adminLoginButtonLogin"
+        android:id="@+id/buttonMainActivityGiveFood"
         android:layout_width="750px"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
         android:layout_gravity="center"
-        android:onClick="giveFood"
+        android:layout_marginTop="40dp"
         android:backgroundTint="@color/purple_200"
+        android:onClick="giveFood"
         android:text="Mama Ver"
         android:textAlignment="center" />
 

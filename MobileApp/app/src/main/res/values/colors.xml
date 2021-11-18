@@ -10,4 +10,6 @@
 
     <color name="inputBorderColor">#222</color>
     <color name="red_helper">#57031F</color>
+    <color name="textViewBorderColor">#00BCD4</color>
+    <color name="textViewGrayColor">#5E5E5E</color>
 </resources>
