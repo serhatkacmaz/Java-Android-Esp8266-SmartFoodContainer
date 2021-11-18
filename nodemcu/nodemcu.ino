@@ -22,7 +22,7 @@ Servo servo;
 void setup() {
   pinMode(trigP, OUTPUT);
   pinMode(echoP, INPUT);
-  pinMode(buzzer,OUTPUT);
+  pinMode(buzzer, OUTPUT);
   servo.attach(D4);
   servo.write(servo_angle);
   delay(500);
@@ -44,34 +44,42 @@ void setup() {
 }
 
 String state = "false";
-
+int distance_bowl = 8;
 void loop() {
-  /*
-    digitalWrite(trigP, LOW);   // Makes trigPin low
-    delayMicroseconds(2);       // 2 micro second delay
 
-    digitalWrite(trigP, HIGH);  // tigPin high
-    delayMicroseconds(10);      // trigPin high for 10 micro seconds
-    digitalWrite(trigP, LOW);   // trigPin low
+  Serial.print(distance_bowl);
+  digitalWrite(trigP, LOW);   // Makes trigPin low
+  delayMicroseconds(2);       // 2 micro second delay
 
-    duration = pulseIn(echoP, HIGH);   //Read echo pin, time in microseconds
-    distance = duration * 0.034 / 2;   //Calculating actual/real distance
+  digitalWrite(trigP, HIGH);  // tigPin high
+  delayMicroseconds(10);      // trigPin high for 10 micro seconds
+  digitalWrite(trigP, LOW);   // trigPin low
 
-    Serial.print("Distance = ");        //Output distance on arduino serial monitor
-    Serial.println(distance);
-    Firebase.setInt("distance",distance);
-  */
+  duration = pulseIn(echoP, HIGH);   //Read echo pin, time in microseconds
+  distance = duration * 0.034 / 2;   //Calculating actual/real distance
+
+  Serial.print("Distance = ");        //Output distance on arduino serial monitor
+  Serial.println(distance);
 
 
-  state = Firebase.getString("State");
-  if (state == "True") {
-    digitalWrite(buzzer,HIGH);
-    servo.write(180);
-    delay(1000);
-    servo.write(0);
-    Firebase.setString("State", "False");
-    digitalWrite(buzzer,LOW);
+
+
+  // 1 tolerans
+  if (distance == distance_bowl - 1 || distance == distance_bowl + 1) {
+    Firebase.setString("bowl_state", "Empty");
+    state = Firebase.getString("State");
+    // Hazne bos degil
+    if (state == "True") {
+      digitalWrite(buzzer, HIGH);
+      servo.write(180);
+      delay(1000);
+      servo.write(0);
+      Firebase.setString("State", "False");
+      digitalWrite(buzzer, LOW);
+    }
   }
-
+  else{
+    Firebase.setString("bowl_state", "Full");
+  }
 
 }

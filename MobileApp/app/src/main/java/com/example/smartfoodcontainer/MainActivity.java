@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, Object> updateHashMapData;
     private int openClosedCount = 0;    // her 4 kapanmada bir
     private int openingClosingBoundary = 4;
+    private String bowl_state;
 
     // init
     private void init() {
@@ -38,18 +39,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getOpenClosedCount();
+        getData();
         init();
     }
 
     public void giveFood(View view) {
-        System.out.println(openClosedCount);
-        if (openClosedCount < openingClosingBoundary) {
-            updateData();
-        } else {
-            Toast.makeText(MainActivity.this, "Mama bitti veremiyoruz.", Toast.LENGTH_SHORT).show();
+        // System.out.println(openClosedCount);
+         System.out.println(bowl_state);
+        if (bowl_state.equals("Empty")){
+            System.out.println("ok1");
+            if (openClosedCount < openingClosingBoundary) {
+                updateData();
+            } else {
+                Toast.makeText(MainActivity.this, "Mama bitti veremiyoruz.", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            Toast.makeText(MainActivity.this, "Kapta mama var.", Toast.LENGTH_SHORT).show();
         }
-        getOpenClosedCount();
+
+        getData();
     }
 
     private void updateData() {
@@ -61,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Toast.makeText(MainActivity.this, "Mama Verildi.", Toast.LENGTH_SHORT).show();
-                        getOpenClosedCount();
+                        getData();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -71,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getOpenClosedCount() {
+    private void getData() {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -80,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     if (dataSnapshot.getKey().equals("OpenCloseCount")) {
                         openClosedCount = Integer.parseInt(dataSnapshot.getValue().toString());
+                    } else if (dataSnapshot.getKey().equals("bowl_state")) {
+                        bowl_state = dataSnapshot.getValue().toString();
                     }
                 }
             }
@@ -89,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Liste: " + error.getMessage().toString(), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
+
+
 }
