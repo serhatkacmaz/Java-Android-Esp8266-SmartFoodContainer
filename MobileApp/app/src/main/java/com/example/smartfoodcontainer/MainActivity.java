@@ -1,8 +1,10 @@
 package com.example.smartfoodcontainer;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -45,17 +47,34 @@ public class MainActivity extends AppCompatActivity {
 
     public void giveFood(View view) {
         // System.out.println(openClosedCount);
-         System.out.println(bowl_state);
-        if (bowl_state.equals("Empty")){
-            System.out.println("ok1");
-            if (openClosedCount < openingClosingBoundary) {
-                updateData();
-            } else {
-                Toast.makeText(MainActivity.this, "Mama bitti veremiyoruz.", Toast.LENGTH_SHORT).show();
+        // System.out.println(bowl_state);
+
+        AlertDialog.Builder checkAlertDialog = new AlertDialog.Builder(MainActivity.this);
+        checkAlertDialog.setTitle("Akıllı Mama");
+        checkAlertDialog.setMessage("Mama vermek istiyor musunuz?");
+        checkAlertDialog.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                if (bowl_state.equals("Empty")) {
+                    if (openClosedCount < openingClosingBoundary) {
+                        updateData();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Mama bitti veremiyoruz.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "Kapta mama var.", Toast.LENGTH_SHORT).show();
+                }
+
             }
-        }else{
-            Toast.makeText(MainActivity.this, "Kapta mama var.", Toast.LENGTH_SHORT).show();
-        }
+        });
+        checkAlertDialog.setNegativeButton("Hayır", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                System.out.println("Hayır Bastın");
+            }
+        });
+        checkAlertDialog.create().show();
 
         getData();
     }

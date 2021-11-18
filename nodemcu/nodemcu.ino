@@ -65,7 +65,7 @@ void loop() {
 
 
   // 1 tolerans
-  if (distance == distance_bowl - 1 || distance == distance_bowl + 1) {
+  if (distance == distance_bowl || distance == distance_bowl - 1 || distance == distance_bowl + 1) {
     Firebase.setString("bowl_state", "Empty");
     state = Firebase.getString("State");
     // Hazne bos degil
