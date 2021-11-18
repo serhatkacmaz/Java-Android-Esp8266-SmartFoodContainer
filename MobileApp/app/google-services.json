@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "19982120519",
+    "project_id": "smart-food-container",
+    "storage_bucket": "smart-food-container.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19982120519:android:7d5ac6be04083cb08ba362",
+        "android_client_info": {
+          "package_name": "com.example.smartfoodcontainer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "19982120519-r8dtdgk2mpsgq0f77uuniuhv6qiigss4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrAFPswcJ5wr4PAyKzriY93S-FnMfwowU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "19982120519-r8dtdgk2mpsgq0f77uuniuhv6qiigss4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
