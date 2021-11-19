@@ -69,9 +69,9 @@ void loop() {
   nowTime();
   formatAlarmClock();
   hc04();
-  
+
   open_close_count = Firebase.getInt("OpenCloseCount");
-  
+
   // 1 tolerans, Mama verme isteği olursa mama ver
   if (distance == distance_bowl || distance == distance_bowl - 1 || distance == distance_bowl + 1) {
     Firebase.setString("bowl_state", "Empty");
@@ -102,9 +102,7 @@ void loop() {
       delay(60000);  // 1 dk bekle
       break;
     }
-    delay(500);
   }
-
 }
 
 // mama ver
