@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private int openingClosingBoundary = 4;
     private String bowl_state;
 
-    int alarmId = 0;
+    int alarmCount=0;
 
     // init
     private void init() {
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void setAlarm(View view) {
+        registerAlarm = new HashMap<String, Object>();
         // https://www.youtube.com/watch?v=XG8OpQ7X-nY
         final Calendar calendar = Calendar.getInstance();
 
@@ -68,31 +70,17 @@ public class MainActivity extends AppCompatActivity {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
                 // System.out.println(simpleDateFormat.format(calendar.getTime().toString()));
 
-                registerAlarm.put(String.valueOf(alarmId), simpleDateFormat.format(calendar.getTime()));
-
-                // ıd alma adete gore
-                databaseReference = FirebaseDatabase.getInstance().getReference().child("Alarm");
-                databaseReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            alarmId = (int) snapshot.getChildrenCount();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
-                //ekleme
-                databaseReference.child(String.valueOf(alarmId + 1)).setValue(simpleDateFormat.format(calendar.getTime()));
+                // alarm ekleme
+                databaseReference.child("Alarm").child(String.valueOf(alarmCount + 1)).setValue(simpleDateFormat.format(calendar.getTime()));
+                updateAlarmCount();
+                Toast.makeText(MainActivity.this, "Alarm kuruldu.", Toast.LENGTH_SHORT).show();
             }
         };
 
         new TimePickerDialog(MainActivity.this, timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
         // https://www.youtube.com/watch?v=XG8OpQ7X-nY
+
+        getData();
     }
 
 
@@ -131,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateData() {
+        updateHashMapData = new HashMap<String, Object>();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         updateHashMapData.put("State", "True");
         updateHashMapData.put("OpenCloseCount", openClosedCount + 1);
@@ -139,6 +128,24 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Toast.makeText(MainActivity.this, "Mama Verildi.", Toast.LENGTH_SHORT).show();
+                        getData();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MainActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateAlarmCount() {
+        updateHashMapData = new HashMap<String, Object>();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        updateHashMapData.put("AlarmCount", alarmCount + 1);
+        databaseReference.updateChildren(updateHashMapData)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
                         getData();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -160,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
                         openClosedCount = Integer.parseInt(dataSnapshot.getValue().toString());
                     } else if (dataSnapshot.getKey().equals("bowl_state")) {
                         bowl_state = dataSnapshot.getValue().toString();
+                    } else if (dataSnapshot.getKey().equals("AlarmCount")) {
+                        alarmCount = Integer.parseInt(dataSnapshot.getValue().toString());
                     }
                 }
             }
@@ -170,6 +179,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }

@@ -1,8 +1,8 @@
 
 #include <ESP8266WiFi.h>
+#include <FirebaseArduino.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
-#include <FirebaseArduino.h>
 #include <Servo.h>
 
 // firebase url
@@ -23,6 +23,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org");
 // variables
 long duration;
 int distance;
+
 int servo_angle = 0;
 int currentHour, currentMinute, currentSecond;
 Servo servo;
@@ -60,41 +61,99 @@ void setup() {
 }
 
 String now_time = "";
+int alarm_count = 0;
+int open_close_count = 0;
+
 void loop() {
+
   nowTime();
-  now_time = (String)currentHour + ":" + (String)currentMinute;
-  Serial.println(now_time);
+  formatAlarmClock();
   hc04();
-
-
-  // 1 tolerans
+  
+  open_close_count = Firebase.getInt("OpenCloseCount");
+  
+  // 1 tolerans, Mama verme isteği olursa mama ver
   if (distance == distance_bowl || distance == distance_bowl - 1 || distance == distance_bowl + 1) {
     Firebase.setString("bowl_state", "Empty");
     state = Firebase.getString("State");
     // Hazne bos degil
     if (state == "True") {
-      digitalWrite(buzzer, HIGH);
-      servo.write(180);
-      delay(1000);
-      servo.write(0);
+      giveFood();
       Firebase.setString("State", "False");
-      digitalWrite(buzzer, LOW);
     }
   }
   else {
     Firebase.setString("bowl_state", "Full");
   }
 
+
+  // gelen alarm var ise mama ver
+  alarm_count = Firebase.getInt("AlarmCount");
+  for (int i = 1; i <= alarm_count; i++) {
+    String get_alarm = Firebase.getString("Alarm/" + String(i));
+
+    if (now_time == get_alarm && open_close_count < 4) {
+      Serial.println("Alarmmm Calıyor");
+      giveFood();
+
+      // açılma kapanmayı 1 arttır
+      Firebase.setInt("OpenCloseCount", open_close_count + 1);
+
+      delay(60000);  // 1 dk bekle
+      break;
+    }
+    delay(500);
+  }
+
+}
+
+// mama ver
+void giveFood() {
+  digitalWrite(buzzer, LOW);
+  servo.write(180);
+  delay(1000);
+  servo.write(0);
+  digitalWrite(buzzer, LOW);
 }
 
 
+// sunucudan gelen saati formatlama
+void formatAlarmClock() {
+  if (now_time[1] == ':' && now_time.length() == 3) {
+    // 1:1  --> 01:01
+    String temp = "0";
+    temp += now_time[0];
+    temp += ":0";
+    temp += now_time[2];
+    now_time = temp;
+  }
+  else if (now_time[1] == ':' && now_time.length() == 4) {
+    // 1:25 --> 01:25
+    String temp = "0";
+    temp += now_time;
+    now_time = temp;
+  }
+  else if (now_time[2] == ':' && now_time.length() == 4) {
+    // 12:7 --> 12:07
+    String temp = "";
+    temp += now_time[0];
+    temp += now_time[1];
+    temp += ":0";
+    temp += now_time[3];
+    now_time = temp;
+  }
+}
+
+// aktif saat bilgisi cekme
 void nowTime() {
   timeClient.update();
 
   currentHour = timeClient.getHours();
   currentMinute = timeClient.getMinutes();
+  now_time = (String)currentHour + ":" + (String)currentMinute;
 }
 
+// mesafe sensoru ile mesafe tespiti
 void hc04() {
   Serial.print(distance_bowl);
   digitalWrite(trigP, LOW);   // Makes trigPin low
@@ -107,6 +166,6 @@ void hc04() {
   duration = pulseIn(echoP, HIGH);   //Read echo pin, time in microseconds
   distance = duration * 0.034 / 2;   //Calculating actual/real distance
 
-  Serial.print("Distance = ");        //Output distance on arduino serial monitor
+  Serial.print(" Distance = ");        //Output distance on arduino serial monitor
   Serial.println(distance);
 }
