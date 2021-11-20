@@ -92,7 +92,7 @@ void loop() {
   for (int i = 1; i <= alarm_count; i++) {
     String get_alarm = Firebase.getString("Alarm/" + String(i));
 
-    if (now_time == get_alarm && open_close_count < 4) {
+    if (now_time == get_alarm && open_close_count < 4 &&(distance == distance_bowl || distance == distance_bowl - 1 || distance == distance_bowl + 1)) {
       Serial.println("Alarmmm Calıyor");
       giveFood();
 
