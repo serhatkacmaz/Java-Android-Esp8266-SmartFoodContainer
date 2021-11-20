@@ -24,18 +24,17 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org");
 long duration;
 int distance;
 
-int servo_angle = 0;
 int currentHour, currentMinute, currentSecond;
 Servo servo;
 String state = "false";
-int distance_bowl = 8;
+int distance_bowl = 10;
 
 void setup() {
   pinMode(trigP, OUTPUT);
   pinMode(echoP, INPUT);
   pinMode(buzzer, OUTPUT);
   servo.attach(D4);
-  servo.write(servo_angle);
+  servo.write(55);
   delay(500);
   Serial.begin(9600);
 
@@ -108,9 +107,9 @@ void loop() {
 // mama ver
 void giveFood() {
   digitalWrite(buzzer, LOW);
-  servo.write(180);
-  delay(1000);
   servo.write(0);
+  delay(1000);
+  servo.write(55);
   digitalWrite(buzzer, LOW);
 }
 
