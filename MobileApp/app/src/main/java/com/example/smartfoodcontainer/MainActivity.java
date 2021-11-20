@@ -3,13 +3,17 @@ package com.example.smartfoodcontainer;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -38,24 +42,68 @@ public class MainActivity extends AppCompatActivity {
     private int openingClosingBoundary = 4;
     private String bowl_state;
 
-    int alarmCount=0;
+    int alarmCount = 0;
+
+    private ImageView bowl_state_image, system_state_image;
+    private TextView text_state_sytem;
 
     // init
     private void init() {
         databaseReference = FirebaseDatabase.getInstance().getReference(); // root
         updateHashMapData = new HashMap<String, Object>();
         registerAlarm = new HashMap<String, Object>();
+
+        bowl_state_image = (ImageView) findViewById(R.id.bowl_state_image);
+        system_state_image = (ImageView) findViewById(R.id.system_state_image);
+        text_state_sytem=(TextView) findViewById(R.id.text_state_sytem);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); // koyu mod
 
         getData();
         init();
     }
 
+
+    public void fillContainer(View view){
+        AlertDialog.Builder checkAlertDialog = new AlertDialog.Builder(MainActivity.this);
+        checkAlertDialog.setTitle("Akıllı Mama");
+        checkAlertDialog.setMessage("Hazneyi maksimim seviyesine kadar doldurdunuz mu?");
+        checkAlertDialog.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                updateHashMapData = new HashMap<String, Object>();
+                databaseReference = FirebaseDatabase.getInstance().getReference();
+                updateHashMapData.put("OpenCloseCount", 0);
+                databaseReference.updateChildren(updateHashMapData)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        });
+        checkAlertDialog.setNegativeButton("Hayır", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                System.out.println("Hayır Bastın");
+            }
+        });
+        checkAlertDialog.create().show();
+
+        getData();
+    }
 
     public void setAlarm(View view) {
         registerAlarm = new HashMap<String, Object>();
@@ -127,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(MainActivity.this, "Mama Verildi.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Mama verildi.", Toast.LENGTH_SHORT).show();
                         getData();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -165,8 +213,40 @@ public class MainActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     if (dataSnapshot.getKey().equals("OpenCloseCount")) {
                         openClosedCount = Integer.parseInt(dataSnapshot.getValue().toString());
+
+                       switch (openClosedCount){
+                           case 0:
+                               system_state_image.setImageResource(R.drawable.battery_100);
+                               text_state_sytem.setText("  Sistem Durumu %100");
+                               break;
+                           case 1:
+                               system_state_image.setImageResource(R.drawable.battery_75);
+                               text_state_sytem.setText("  Sistem Durumu %75");
+                               break;
+                           case 2:
+                               system_state_image.setImageResource(R.drawable.battery_50);
+                               text_state_sytem.setText("  Sistem Durumu %50");
+                               break;
+                           case 3:
+                               system_state_image.setImageResource(R.drawable.battery_25);
+                               text_state_sytem.setText("  Sistem Durumu %25");
+                               break;
+                           case 4:
+                               system_state_image.setImageResource(R.drawable.charge);
+                               text_state_sytem.setText("Hazneyi Doldurun");
+
+                               break;
+                           default:
+                               break;
+                       }
+
                     } else if (dataSnapshot.getKey().equals("bowl_state")) {
                         bowl_state = dataSnapshot.getValue().toString();
+                        if (bowl_state.equals("Empty")) {
+                            bowl_state_image.setImageResource(R.drawable.blow_empty);
+                        } else {
+                            bowl_state_image.setImageResource(R.drawable.blow_full);
+                        }
                     } else if (dataSnapshot.getKey().equals("AlarmCount")) {
                         alarmCount = Integer.parseInt(dataSnapshot.getValue().toString());
                     }
@@ -178,5 +258,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Liste: " + error.getMessage().toString(), Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 }

@@ -98,7 +98,7 @@ void loop() {
 
       // açılma kapanmayı 1 arttır
       Firebase.setInt("OpenCloseCount", open_close_count + 1);
-
+      Firebase.setString("bowl_state","Full");
       delay(60000);  // 1 dk bekle
       break;
     }

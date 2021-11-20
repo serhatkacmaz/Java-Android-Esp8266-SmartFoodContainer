@@ -4,78 +4,134 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:background="#FFF"
     android:orientation="vertical"
     android:padding="10dp"
+
     tools:context=".MainActivity">
 
-    <!--
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="5dp"
-            app:boxCornerRadiusBottomEnd="20dp"
-            app:boxCornerRadiusTopStart="20dp"
-            app:boxStrokeColor="@color/inputBorderColor"
-            app:endIconMode="clear_text"
-            app:helperTextTextColor="@color/red_helper">
-
-            <EditText
-                android:id="@+id/editTextAdminLoginUserName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Deneme"
-                android:inputType="textEmailAddress"
-                android:minHeight="48dp"
-                android:textAlignment="center"
-                tools:ignore="SpeakableTextPresentCheck" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-        -->
-
-
-    <TextView
-        android:id="@+id/editTextMainActivity"
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:background="@drawable/text_view_border"
-        android:textAlignment="center"
-        android:ems="10"
-        android:hint="Alarm Kur"
-        android:inputType="date"
-        android:minHeight="48dp"
-        android:padding="15dp"
-        android:textColor="@color/black"
-        android:textColorHint="@color/textViewGrayColor"
-        android:textSize="16dp"
-        tools:ignore="SpeakableTextPresentCheck" />
+        android:layout_margin="10dp"
+        android:layout_marginTop="20dp">
+
+        <TableRow  android:layout_marginTop="20dp" android:gravity="center">
+
+            <ImageView
+                android:padding="15dp"
+                android:layout_width="400px"
+                android:layout_height="400px"
+                android:layout_gravity="center"
+                android:src="@drawable/cat_dog_logo" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_weight="4"
+                android:gravity="center_horizontal"
+                android:text="AKILLI MAMA"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="30dp" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="80dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/bowl_state_image"
+                android:layout_width="250px"
+                android:layout_height="250px"
+                android:layout_gravity="center"
+                android:layout_marginStart="0dp"
+                android:layout_weight="5"
+                android:src="@drawable/blow_empty" />
+
+            <ImageView
+                android:id="@+id/system_state_image"
+                android:layout_width="250px"
+                android:layout_height="250px"
+                android:layout_gravity="center"
+                android:layout_marginStart="0dp"
+                android:layout_weight="20"
+                android:src="@drawable/charge" />
+
+        </TableRow>
+
+
+        <TableRow android:layout_marginTop="3dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_weight="4"
+                android:gravity="center_horizontal"
+                android:text="Kap Durumu"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="16dp" />
+            />
+
+
+            <TextView
+                android:id="@+id/text_state_sytem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_weight="5"
+                android:gravity="center_horizontal"
+                android:text="  Sistem Durumu"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="16dp" />
+
+        </TableRow>
+
+    </TableLayout>
 
     <Button
         android:id="@+id/buttonMainActivitySetAlarm"
-        android:layout_width="750px"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/text_view_border"
         android:backgroundTint="@color/purple_200"
         android:onClick="setAlarm"
-        android:text="Alarm Kur"
+        android:text="  Alarm Kur  "
         android:textAlignment="center" />
 
 
     <Button
         android:id="@+id/buttonMainActivityGiveFood"
-        android:layout_width="750px"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/text_view_border"
         android:backgroundTint="@color/purple_200"
         android:onClick="giveFood"
-        android:text="Mama Ver"
+        android:text="  Mama Ver  "
         android:textAlignment="center" />
+
+    <Button
+        android:id="@+id/buttonMainActivityFillContainer"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/text_view_border"
+        android:backgroundTint="@color/purple_200"
+        android:onClick="fillContainer"
+        android:text="Hazneyi Doldur"
+        android:textAlignment="center" />
+
 
 </LinearLayout>
