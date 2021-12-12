@@ -1,15 +1,16 @@
 
+#include <FirebaseESP8266.h>
 #include <ESP8266WiFi.h>
-#include <FirebaseArduino.h>
+#include <Servo.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
-#include <Servo.h>
+
 
 // firebase url
-#define FIREBASE_HOST "smart-food-container-default-rtdb.firebaseio.com"
+#define FIREBASE_HOST "https://smart-food-container-default-rtdb.firebaseio.com/"
 #define FIREBASE_AUTH "p3AP0oiig5bpQbNl4x38Cr00um3anVAi22TVUL2w"
-#define WIFI_SSID "FiberHGW_ZTQR32_2.4GHz"
-#define WIFI_PASSWORD "HR9uueztCE"
+#define WIFI_SSID "TurkTelekom_TA000"
+#define WIFI_PASSWORD "x3bNx0Gg"
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -25,11 +26,28 @@ long duration;
 int distance;
 
 int currentHour, currentMinute, currentSecond;
+
+FirebaseData Data;
 Servo servo;
-String state = "false";
-int distance_bowl = 10;
 
 void setup() {
+  // connect to wifi
+  Serial.begin(9600);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("connecting");
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(500);
+  }
+  
+  Serial.println();
+  Serial.print("connected: ");
+  Serial.println(WiFi.localIP());
+  
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  Firebase.reconnectWiFi(true);
+
   pinMode(trigP, OUTPUT);
   pinMode(echoP, INPUT);
   pinMode(buzzer, OUTPUT);
@@ -37,67 +55,54 @@ void setup() {
   servo.write(55);
   delay(500);
   Serial.begin(9600);
-
-  // connect to wifi
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("connecting");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(500);
-  }
-  Serial.println();
-  Serial.print("connected: ");
-  Serial.println(WiFi.localIP());
-
   // Initialize a NTPClient to get time
   // https://randomnerdtutorials.com/esp8266-nodemcu-date-time-ntp-client-server-arduino/
   timeClient.begin();
   timeClient.setTimeOffset(10800); // GMT +3
   // https://randomnerdtutorials.com/esp8266-nodemcu-date-time-ntp-client-server-arduino/
-
-  // connect to firebase
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
 }
 
 String now_time = "";
 int alarm_count = 0;
-int open_close_count = 0;
-
+int open_close_count;
+String state = "false";
+int distance_bowl = 10;
 void loop() {
 
   nowTime();
   formatAlarmClock();
   hc04();
 
-  open_close_count = Firebase.getInt("OpenCloseCount");
-
+  Firebase.getInt(Data,"/OpenCloseCount",open_close_count);
+    
   // 1 tolerans, Mama verme isteği olursa mama ver
   if (distance == distance_bowl || distance == distance_bowl - 1 || distance == distance_bowl + 1) {
-    Firebase.setString("bowl_state", "Empty");
-    state = Firebase.getString("State");
+    Firebase.setString(Data,"/bowl_state", "Empty");
+    Firebase.getString(Data,"/State",state);
     // Hazne bos degil
     if (state == "True") {
       giveFood();
-      Firebase.setString("State", "False");
+      Firebase.setString(Data,"/State", "False");
     }
   }
   else {
-    Firebase.setString("bowl_state", "Full");
+    Firebase.setString(Data,"/bowl_state", "Full");
   }
 
 
   // gelen alarm var ise mama ver
-  alarm_count = Firebase.getInt("AlarmCount");
+  Firebase.getInt(Data,"/AlarmCount",alarm_count);
   for (int i = 1; i <= alarm_count; i++) {
-    String get_alarm = Firebase.getString("Alarm/" + String(i));
-
+    String get_alarm;
+    Firebase.getString(Data,"/Alarm/" + String(i),get_alarm);
+    
     if (now_time == get_alarm && open_close_count < 4 &&(distance == distance_bowl || distance == distance_bowl - 1 || distance == distance_bowl + 1)) {
       Serial.println("Alarmmm Calıyor");
       giveFood();
 
       // açılma kapanmayı 1 arttır
-      Firebase.setInt("OpenCloseCount", open_close_count + 1);
-      Firebase.setString("bowl_state","Full");
+      Firebase.setInt(Data,"/OpenCloseCount", open_close_count + 1);
+      Firebase.setString(Data,"/bowl_state","Full");
       delay(60000);  // 1 dk bekle
       break;
     }
@@ -106,7 +111,7 @@ void loop() {
 
 // mama ver
 void giveFood() {
-  digitalWrite(buzzer, LOW);
+  digitalWrite(buzzer, HIGH);
   servo.write(0);
   delay(1000);
   servo.write(55);
