@@ -108,13 +108,25 @@
         android:text="  Alarm Kur  "
         android:textAlignment="center" />
 
+    <Button
+        android:id="@+id/buttonMainActivityDeleteAlarm"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/text_view_border"
+        android:backgroundTint="@color/purple_200"
+        android:onClick="DeleteAlarms"
+        android:text="  Alarmları Kaldır  "
+        android:textAlignment="center" />
+
 
     <Button
         android:id="@+id/buttonMainActivityGiveFood"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/text_view_border"
         android:backgroundTint="@color/purple_200"
         android:onClick="giveFood"
@@ -126,7 +138,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/text_view_border"
         android:backgroundTint="@color/purple_200"
         android:onClick="fillContainer"

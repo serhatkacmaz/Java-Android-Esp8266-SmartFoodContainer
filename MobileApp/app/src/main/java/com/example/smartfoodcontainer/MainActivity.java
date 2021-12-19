@@ -204,6 +204,63 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void DeleteAlarms(View view) {
+        AlertDialog.Builder checkAlertDialog = new AlertDialog.Builder(MainActivity.this);
+        checkAlertDialog.setTitle("Akıllı Mama");
+        checkAlertDialog.setMessage("Alarmları silmek istiyor musunuz?");
+        checkAlertDialog.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                DeleteAlarm();
+
+            }
+        });
+        checkAlertDialog.setNegativeButton("Hayır", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                System.out.println("Hayır Bastın");
+            }
+        });
+        checkAlertDialog.create().show();
+
+    }
+
+
+    public void DeleteAlarm(){
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("Alarm");
+        databaseReference.removeValue()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Toast.makeText(MainActivity.this, "Alarmlar Silindi", Toast.LENGTH_SHORT).show();
+
+                            updateHashMapData = new HashMap<String, Object>();
+                            databaseReference = FirebaseDatabase.getInstance().getReference();
+                            updateHashMapData.put("AlarmCount", 0);
+                            databaseReference.updateChildren(updateHashMapData)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            getData();
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(MainActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                        else{
+                            Toast.makeText(MainActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
     private void getData() {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.addValueEventListener(new ValueEventListener() {
