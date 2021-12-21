@@ -7,10 +7,10 @@
 
 
 // firebase url
-#define FIREBASE_HOST "https://smart-food-container-default-rtdb.firebaseio.com/"
-#define FIREBASE_AUTH "p3AP0oiig5bpQbNl4x38Cr00um3anVAi22TVUL2w"
-#define WIFI_SSID "RedmiNote"
-#define WIFI_PASSWORD "adam1123"
+#define FIREBASE_HOST ""
+#define FIREBASE_AUTH ""
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
