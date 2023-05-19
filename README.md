@@ -24,3 +24,4 @@ The application shows the information that 25 percent of the food status in the 
 ![Başlıksız Diyagram drawio (4)](https://github.com/Serhatkacmaz/Java-Android-Esp8266-SmartFoodContainer/assets/56757412/0c4958c3-a9a8-44a1-ad34-f8dc5e1816e9)
 
 The alarm setting screen on the mobile application is displayed. In order to give food during certain time periods, the alarm setup window is opened with the “Alarm Setup” button on the mobile application screen and the alarm is installed through this window.
+
